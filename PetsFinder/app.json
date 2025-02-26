@@ -1,0 +1,31 @@
+{
+  "expo": {
+    "name": "PetsFinder",
+    "slug": "PetsFinder",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/banner.webp",
+    "userInterfaceStyle": "light",
+    "newArchEnabled": true,
+    "splash": {
+      "image": "./assets/banner.webp",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/banner.webp",
+        "backgroundColor": "#ffffff"
+      }
+    },
+    "web": {
+      "favicon": "./assets/icons.webp"
+    },
+    "plugins": [
+      "expo-router"
+    ]
+  }
+}
