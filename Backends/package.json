@@ -14,7 +14,7 @@
   "dependencies": {
     "backends": "file:",
     "bcryptjs": "^2.4.3",
-    "body-parse": "^0.1.0",
+    "body-parser": "^1.20.2",
     "cloudinary": "^1.41.3",
     "cookie-parser": "^1.4.7",
     "cookies": "^0.9.1",
@@ -31,5 +31,9 @@
     "multer-storage-cloudinary": "^4.0.0",
     "nodemon": "^3.1.9",
     "xss-clean": "^0.1.4"
+  },
+  "engines": {
+    "node": ">=18.x",
+    "npm": ">=10.x"
   }
 }
