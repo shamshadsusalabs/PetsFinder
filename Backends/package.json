@@ -4,10 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node index.js",
-    "dev": "nodemon index.js",
-    "postinstall": "npm install --force"
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
   "author": "",
@@ -32,9 +29,5 @@
     "multer-storage-cloudinary": "^4.0.0",
     "nodemon": "^3.1.9",
     "xss-clean": "^0.1.4"
-  },
-  "engines": {
-    "node": ">=18.x",
-    "npm": ">=10.x"
   }
 }
