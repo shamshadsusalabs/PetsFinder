@@ -50,7 +50,7 @@ app.use('/api/', rewardRoutes ); // Use pet routes
 
 // Default Route
 app.get('/', (req, res) => {
-    res.send('Welcome to PetsFinder API 🚀');
+    res.send('Welcome to PetsFinder API 🚀 version 2.0');
 });
 
 // Server Listen
