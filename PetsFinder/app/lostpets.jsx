@@ -124,7 +124,7 @@ const LostPetsForm = () => {
   
       formData.append("userId", userId);
   
-      const response = await fetch("http://192.168.229.99:5000/api/Lostpets/create", {
+      const response = await fetch("https://petsfinder-702291258008.asia-south1.run.app/api/Lostpets/create", {
         method: "POST",
         headers: {
           Authorization: `Bearer ${accessToken}`,

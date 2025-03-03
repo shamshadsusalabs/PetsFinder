@@ -36,7 +36,7 @@ export default function Dashboard() {
         return;
       }
 
-      const response = await fetch(`http://192.168.229.99:5000/api/users/getById/${userId}`, {
+      const response = await fetch(`https://petsfinder-702291258008.asia-south1.run.app/api/users/getById/${userId}`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
@@ -75,7 +75,7 @@ export default function Dashboard() {
         return;
       }
 
-      const response = await fetch(`http://192.168.229.99:5000/api/rewards/${userId}`, {
+      const response = await fetch(`https://petsfinder-702291258008.asia-south1.run.app/api/rewards/${userId}`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
@@ -114,7 +114,7 @@ export default function Dashboard() {
         return;
       }
 
-      const response = await fetch("http://192.168.229.99:5000/api/users/logout", {
+      const response = await fetch("https://petsfinder-702291258008.asia-south1.run.app/api/users/logout", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -177,7 +177,7 @@ export default function Dashboard() {
       }
   
       console.log("Preparing to send update request...");
-      const response = await fetch(`http://192.168.229.99:5000/api/users/update-profile`, {
+      const response = await fetch(`https://petsfinder-702291258008.asia-south1.run.app/api/users/update-profile`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",

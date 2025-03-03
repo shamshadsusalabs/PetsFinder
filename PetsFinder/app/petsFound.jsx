@@ -5,11 +5,11 @@ import { Alert } from "react-native";
 import Header from "./header";
 import { useRouter } from "expo-router";
 import AsyncStorage from '@react-native-async-storage/async-storage';
-const API_URL = "http://192.168.229.99:5000/api/Foundpets/getAll";
+const API_URL = "https://petsfinder-702291258008.asia-south1.run.app/api/Foundpets/getAll";
 
 
-const API_URL1 = "http://192.168.229.99:5000/api/Foundpets/update-match"; 
-const API_URL2 = "http://192.168.229.99:5000/api/rewards";
+const API_URL1 = "https://petsfinder-702291258008.asia-south1.run.app/api/Foundpets/update-match"; 
+const API_URL2 = "https://petsfinder-702291258008.asia-south1.run.app/api/rewards";
 
 const handleMatch = async (_id,  rewards,) => {
   try {

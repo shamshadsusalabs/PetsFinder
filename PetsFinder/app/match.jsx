@@ -15,7 +15,7 @@ const Match = () => {
         const user = await AsyncStorage.getItem("user");
         if (!user) return;
         const userId = JSON.parse(user).id;
-        const response = await axios.get(`http://192.168.229.99:5000/api/Foundpets/matching-pets/${userId}`);
+        const response = await axios.get(`https://petsfinder-702291258008.asia-south1.run.app/api/Foundpets/matching-pets/${userId}`);
         setPets(response.data.data);
       } catch (error) {
     
