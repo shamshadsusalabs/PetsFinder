@@ -2,7 +2,7 @@ import React from "react";
 import { View, Text, TouchableOpacity } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
-
+import { Home, PawPrint } from "lucide-react-native";
 const Footer = () => {
   const router = useRouter();
   const buttonColors = ["#fc6767", "#ec008c"]; // Same gradient for all buttons
@@ -21,10 +21,10 @@ const Footer = () => {
             className="py-5 px-6 rounded-2xl items-center shadow-xl w-full"
           >
             <Text className="text-white font-semibold text-sm opacity-80 mb-1">
-              Is your pet lost?
+              Is your dog or cat missing?
             </Text>
             <Text className="text-white font-extrabold text-xl tracking-wider">
-              🐶 Lost Pets Reports
+              🐶 Report Lost Animal
             </Text>
           </LinearGradient>
         </TouchableOpacity>
@@ -38,10 +38,10 @@ const Footer = () => {
             className="py-5 px-6 rounded-2xl items-center shadow-xl w-full"
           >
             <Text className="text-white font-semibold text-sm opacity-80 mb-1">
-              Did you find any pets?
+              Have you Found a dog or a cat and don't know who it belongs to?
             </Text>
             <Text className="text-white font-extrabold text-xl tracking-wider">
-              🏠 Found Pets Reports
+              🏠Report New Found Animal
             </Text>
           </LinearGradient>
         </TouchableOpacity>
@@ -54,8 +54,9 @@ const Footer = () => {
             end={{ x: 1, y: 1 }}
             className="py-5 px-6 rounded-2xl items-center shadow-xl w-full"
           >
+          
             <Text className="text-white font-extrabold text-xl tracking-wider">
-              🔍 Match Lost & Found Pets
+            🐾 AI Match (Lost & Found) 
             </Text>
           </LinearGradient>
         </TouchableOpacity>

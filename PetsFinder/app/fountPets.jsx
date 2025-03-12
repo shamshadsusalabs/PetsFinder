@@ -1,15 +1,25 @@
-import React, { useState } from "react";
-import { View, Text, TextInput, TouchableOpacity, Image, ScrollView, Platform, Alert, ActivityIndicator } from "react-native";
+import React, { useState, useCallback, useEffect } from "react";
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  Image,
+  ScrollView,
+  Platform,
+  Alert,
+  ActivityIndicator,
+} from "react-native";
 import { Picker } from "@react-native-picker/picker";
 import { LinearGradient } from "expo-linear-gradient";
 import * as ImagePicker from "expo-image-picker";
 import { Ionicons } from "@expo/vector-icons";
 import DateTimePicker from "@react-native-community/datetimepicker";
-import "../global.css"
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import "../global.css";
+
 const FoundPetsForm = () => {
   const [petDetails, setPetDetails] = useState({
-    name: "",
     Indianbreed: "",
     Importedbreed: "",
     lastSeen: new Date(),
@@ -27,15 +37,17 @@ const FoundPetsForm = () => {
     noseColour: "",
     eyeColour: "",
     injury: "",
-    underTreatment: "",
     image: null,
     details: "",
-    rewards: "",
   });
 
   const [showDatePicker, setShowDatePicker] = useState(false);
+  const [formProgress, setFormProgress] = useState(0);
+  const [loading, setLoading] = useState(false);
 
-  // Function to pick image from gallery
+  const requiredFields = ["lastSeen", "ownerName", "contactName", "location", "image", "gender"];
+
+  // Image picker functions
   const pickImage = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
@@ -48,7 +60,6 @@ const FoundPetsForm = () => {
     }
   };
 
-  // Function to open camera
   const openCamera = async () => {
     let result = await ImagePicker.launchCameraAsync({
       allowsEditing: true,
@@ -60,7 +71,7 @@ const FoundPetsForm = () => {
     }
   };
 
-  // Function to handle date change
+  // Date picker handler
   const onDateChange = (event, selectedDate) => {
     if (selectedDate) {
       setPetDetails({ ...petDetails, lastSeen: selectedDate });
@@ -68,49 +79,40 @@ const FoundPetsForm = () => {
     setShowDatePicker(false);
   };
 
-  // Function to validate and submit form
- 
-  
-  const [loading, setLoading] = useState(false); // Loading state
-
-  const submitForm = async () => {
-    setLoading(true); // Loader start
+  // Form submission
+  const submitForm = useCallback(async () => {
+    setLoading(true);
     try {
-      const { lastSeen, ownerName, contactName, location, image, ...optionalFields } = petDetails;
-      
-      if (!lastSeen || !ownerName || !contactName || !location || !image) {
-        Alert.alert("Error", "Please fill all required fields marked with *");
+      const emptyFields = requiredFields.filter((field) => {
+        if (field === "image") return !petDetails[field];
+        if (field === "lastSeen") return !petDetails[field];
+        return petDetails[field] === "";
+      });
+
+      if (emptyFields.length > 0) {
+        const emptyFieldNames = emptyFields.map((field) => formatFieldName(field)).join(", ");
+        Alert.alert("Error", `Please fill all required fields: ${emptyFieldNames}`);
         setLoading(false);
         return;
       }
-  
-      const isAtLeastOneOptionalFieldFilled = Object.values(optionalFields).some(
-        (value) => value !== "" && value !== null
-      );
-  
-      if (!isAtLeastOneOptionalFieldFilled) {
-        Alert.alert("Error", "Please fill at least one optional field.");
-        setLoading(false);
-        return;
-      }
-  
-      const userData = await AsyncStorage.getItem('user');
+
+      const userData = await AsyncStorage.getItem("user");
       if (!userData) {
         Alert.alert("Error", "User data not found!");
         setLoading(false);
         return;
       }
-  
+
       const user = JSON.parse(userData);
       const accessToken = user?.accessToken;
       const userId = user?.id;
-  
+
       if (!accessToken || !userId) {
         Alert.alert("Error", "User authentication failed!");
         setLoading(false);
         return;
       }
-  
+
       const formData = new FormData();
       Object.keys(petDetails).forEach((key) => {
         if (key === "image" && petDetails.image) {
@@ -125,23 +127,21 @@ const FoundPetsForm = () => {
           formData.append(key, petDetails[key]);
         }
       });
-  
       formData.append("userId", userId);
-  
-      const response = await fetch("https://petsfinder-702291258008.asia-south1.run.app/api/Foundpets/create", {
+
+      const response = await fetch("http://192.168.191.99:5000/api/Foundpets/create", {
         method: "POST",
         headers: {
           Authorization: `Bearer ${accessToken}`,
         },
         body: formData,
       });
-  
+
       const result = await response.json();
-  
+
       if (response.ok) {
-        Alert.alert("Success", "Pet report submitted successfully!");
+        Alert.alert("Success", "Pet report submitted successfully! Form 100% complete");
         setPetDetails({
-          name: "",
           Indianbreed: "",
           Importedbreed: "",
           lastSeen: new Date(),
@@ -159,28 +159,52 @@ const FoundPetsForm = () => {
           noseColour: "",
           eyeColour: "",
           injury: "",
-          underTreatment: "",
           image: null,
           details: "",
-          rewards: "",
         });
       } else {
         Alert.alert("Error", result.message || "Something went wrong!");
       }
     } catch (error) {
- 
       Alert.alert("Error", "Failed to submit the form.");
     } finally {
-      setLoading(false); // Loader stop
+      setLoading(false);
     }
-  };
+  }, [petDetails]);
 
+  // Progress calculation
+  const calculateProgress = useCallback(() => {
+    const totalFields = requiredFields.length;
+    let filledFields = 0;
 
+    requiredFields.forEach((field) => {
+      if (field === "lastSeen") {
+        if (petDetails[field].getTime() !== new Date().getTime()) filledFields++; // Compare timestamps
+      } else if (petDetails[field] && petDetails[field] !== "") {
+        filledFields++;
+      }
+    });
 
+    const percentage = Math.round((filledFields / totalFields) * 100);
+    setFormProgress(percentage);
+  }, [petDetails]);
+
+  useEffect(() => {
+    calculateProgress();
+  }, [petDetails, calculateProgress]);
+
+  const formatFieldName = useCallback((field) => {
+    const specialCases = {
+      Indianbreed: "Indian Breed",
+      Importedbreed: "Imported Breed",
+    };
+    return specialCases[field] || field.replace(/([A-Z])/g, " $1").replace(/^./, (str) => str.toUpperCase()).trim();
+  }, []);
 
   return (
-    <ScrollView className="flex-1 bg-white mt-6">
-      <Text className="text-3xl font-extrabold text-gray-900 mb-6 text-center">🐾 Report Found Pets</Text>
+    <ScrollView className="flex-1 bg-white mt-6 px-4">
+      <Text className="text-3xl font-extrabold text-gray-900 mb-6 text-center">🐾 Report Found Dog and Cat</Text>
+      <Text className="text-sm text-gray-600 mb-4">Form Progress: {formProgress}%</Text>
 
       {/* Image Section */}
       <View className="items-center mb-6">
@@ -202,17 +226,19 @@ const FoundPetsForm = () => {
       </View>
 
       {/* Required Fields */}
+      <Text className="text-lg font-bold text-gray-800 mb-2">Required Fields</Text>
       <TextInput
-        placeholder="Owner Name*"
+        placeholder="Finder Name*"
         className="border p-4 rounded-lg mb-4 bg-gray-50 shadow-sm"
         value={petDetails.ownerName}
         onChangeText={(text) => setPetDetails({ ...petDetails, ownerName: text })}
       />
       <TextInput
-        placeholder="Contact Details*"
+        placeholder="Mobile Number*"
         className="border p-4 rounded-lg mb-4 bg-gray-50 shadow-sm"
         value={petDetails.contactName}
         onChangeText={(text) => setPetDetails({ ...petDetails, contactName: text })}
+        keyboardType="phone-pad"
       />
       <TextInput
         placeholder="Location*"
@@ -221,9 +247,8 @@ const FoundPetsForm = () => {
         onChangeText={(text) => setPetDetails({ ...petDetails, location: text })}
       />
       <TouchableOpacity onPress={() => setShowDatePicker(true)} className="border p-4 rounded-lg mb-4 bg-gray-50 shadow-sm">
-        <Text>{petDetails.lastSeen.toLocaleString()}</Text>
+        <Text>{petDetails.lastSeen.toLocaleDateString()} (Last Seen*)</Text>
       </TouchableOpacity>
-
       {showDatePicker && (
         <DateTimePicker
           value={petDetails.lastSeen}
@@ -232,46 +257,67 @@ const FoundPetsForm = () => {
           onChange={onDateChange}
         />
       )}
+      <View className="border p-2 rounded-lg mb-4 bg-gray-50 shadow-sm">
+        <Picker
+          selectedValue={petDetails.gender}
+          onValueChange={(value) => setPetDetails((prev) => ({ ...prev, gender: value }))}
+        >
+          <Picker.Item label="Select Gender*" value="" />
+          {getOptions("gender").map((option) => (
+            <Picker.Item key={option} label={option} value={option} />
+          ))}
+        </Picker>
+      </View>
 
       {/* Optional Fields */}
-      <TextInput
-        placeholder="Pet Name"
-        className="border p-4 rounded-lg mb-4 bg-gray-50 shadow-sm"
-        value={petDetails.name}
-        onChangeText={(text) => setPetDetails({ ...petDetails, name: text })}
-      />
+      <Text className="text-lg font-bold text-gray-800 mb-2">Optional Fields</Text>
       <TextInput
         placeholder="Details"
         className="border p-4 rounded-lg mb-4 bg-gray-50 shadow-sm"
         value={petDetails.details}
         onChangeText={(text) => setPetDetails({ ...petDetails, details: text })}
       />
-      <TextInput
-        placeholder="Rewards"
-        className="border p-4 rounded-lg mb-4 bg-gray-50 shadow-sm"
-        value={petDetails.rewards}
-        onChangeText={(text) => setPetDetails({ ...petDetails, rewards: text })}
-      />
 
-      {/* Dropdowns for Optional Fields */}
-      {["Indianbreed", "Importedbreed", "gender", "sterilised", "earClip", "tailCut", "leg", "size", "body", "colour", "noseColour", "eyeColour", "injury", "underTreatment"].map((field) => (
+      {/* Dropdowns */}
+      {[
+        "Indianbreed",
+        "Importedbreed",
+        "sterilised",
+        "earClip",
+        "tailCut",
+        "leg",
+        "size",
+        "body",
+        "colour",
+        "noseColour",
+        "eyeColour",
+        "injury",
+      ].map((field) => (
         <View key={field} className="border p-2 rounded-lg mb-4 bg-gray-50 shadow-sm">
-          <Picker selectedValue={petDetails[field]} onValueChange={(value) => setPetDetails({ ...petDetails, [field]: value })}>
-            <Picker.Item label={`Select ${field}`} value="" />
+          <Picker
+            selectedValue={petDetails[field]}
+            onValueChange={(value) => setPetDetails((prev) => ({ ...prev, [field]: value }))}
+          >
+            <Picker.Item label={`Select ${formatFieldName(field)}`} value="" />
             {getOptions(field).map((option) => (
               <Picker.Item key={option} label={option} value={option} />
             ))}
           </Picker>
         </View>
       ))}
- {loading && (
-      <View className="items-center mb-4">
-        <ActivityIndicator size="large" color="#0000ff" />
-      </View>
-    )}
+
+      {loading && (
+        <View className="items-center mb-4">
+          <ActivityIndicator size="large" color="#0000ff" />
+        </View>
+      )}
+
       {/* Submit Button */}
       <TouchableOpacity onPress={submitForm} className="mt-6 shadow-lg">
-        <LinearGradient colors={["#ff512f", "#dd2476"]} style={{ padding: 15, borderRadius: 10, alignItems: "center" }}>
+        <LinearGradient
+          colors={["#ff512f", "#dd2476"]}
+          style={{ padding: 15, borderRadius: 10, alignItems: "center" }}
+        >
           <Text className="text-white font-bold text-lg uppercase tracking-wide">Submit Report</Text>
         </LinearGradient>
       </TouchableOpacity>
@@ -279,14 +325,36 @@ const FoundPetsForm = () => {
   );
 };
 
-// Function to get options for dropdowns
+// Dropdown options (unchanged)
 const getOptions = (field) => {
   const options = {
     Indianbreed: [
-      "Indie", "Indie Mix", "Lab Mix", "Rottweiler Mix", "Doberman Mix", 
-      "German Shepherd Mix", "Pom Mix", "Spitz Mix", "others"
+      "Indie",
+      "Indie Mix",
+      "Lab Mix",
+      "Rottweiler Mix",
+      "Doberman Mix",
+      "German Shepherd Mix",
+      "Pom Mix",
+      "Spitz Mix",
+      "Other",
     ],
-    Importedbreed: ["Labrador", "Rottweiler", "German Shepherd", "Pomeranian", "Spitz", "Shih Tzu", "Beagle", "Pit Bull", "American Bully", "Pakistani Bully", "Golden Retriever", "Dalmatian", "Pug", "Other"],
+    Importedbreed: [
+      "Labrador",
+      "Rottweiler",
+      "German Shepherd",
+      "Pomeranian",
+      "Spitz",
+      "Shih Tzu",
+      "Beagle",
+      "Pit Bull",
+      "American Bully",
+      "Pakistani Bully",
+      "Golden Retriever",
+      "Dalmatian",
+      "Pug",
+      "Other",
+    ],
     gender: ["Male", "Female"],
     sterilised: ["Yes", "No"],
     earClip: ["Left", "Right"],
@@ -298,7 +366,6 @@ const getOptions = (field) => {
     noseColour: ["Black", "Pink", "Red", "Spots", "other"],
     eyeColour: ["Black", "Brown", "other"],
     injury: ["Yes", "No"],
-    underTreatment: ["Yes", "No"],
   };
   return options[field] || [];
 };

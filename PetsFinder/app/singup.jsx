@@ -9,7 +9,6 @@ import axios from "axios";
 // Validation Schema
 const validationSchema = Yup.object().shape({
   name: Yup.string().required("Name is required"),
-  email: Yup.string().email("Invalid email").required("Email is required"),
   contactNumber: Yup.string()
     .matches(/^[0-9]+$/, "Must be digits")
     .min(10, "Must be at least 10 digits")
@@ -40,10 +39,9 @@ const SignupForm = () => {
     try {
       const formData = new FormData();
       formData.append("name", values.name);
-      formData.append("email", values.email);
       formData.append("contactNumber", values.contactNumber);
       formData.append("password", values.password);
-  
+
       if (profilePic) {
         formData.append("profilePic", {
           uri: profilePic,
@@ -51,32 +49,29 @@ const SignupForm = () => {
           type: "image/jpeg",
         });
       }
-  
-      const response = await axios.post("https://petsfinder-702291258008.asia-south1.run.app/api/users/signup", formData, {
+
+      const response = await axios.post("http://192.168.191.99:5000/api/users/signup", formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
-  
+
       Alert.alert("Success", "User registered successfully!");
-  
-      
       resetForm();
       setProfilePic(null);
     } catch (error) {
-     
       Alert.alert("Error", error.response?.data?.message || "Registration failed!");
     }
     setLoading(false);
   };
-  
+
   return (
     <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} className="flex-1 bg-gray-50">
       <ScrollView contentContainerStyle={{ flexGrow: 1 }} keyboardShouldPersistTaps="handled">
         <View className="p-6">
           {/* Banner Image */}
-          <Image source={require("../assets/icons.webp")} className="w-full h-44 rounded-lg shadow-md mb-5" />
+          <Image source={require("../assets/icons.png")} className="w-full h-44 rounded-lg shadow-md mb-5" />
 
           <Formik
-            initialValues={{ name: "", email: "", contactNumber: "", password: "", type: "" }}
+            initialValues={{ name: "", contactNumber: "", password: "", type: "" }}
             validationSchema={validationSchema}
             onSubmit={handleSignup}
           >
@@ -102,18 +97,6 @@ const SignupForm = () => {
                   value={values.name}
                 />
                 {touched.name && errors.name && <Text className="text-red-500 text-xs">{errors.name}</Text>}
-
-                {/* Email Input */}
-                <TextInput
-                  placeholder="Email Address"
-                  className="border rounded-lg p-4 mb-3 bg-white shadow-md"
-                  keyboardType="email-address"
-                  autoCapitalize="none"
-                  onChangeText={handleChange("email")}
-                  onBlur={handleBlur("email")}
-                  value={values.email}
-                />
-                {touched.email && errors.email && <Text className="text-red-500 text-xs">{errors.email}</Text>}
 
                 {/* Contact Number */}
                 <TextInput

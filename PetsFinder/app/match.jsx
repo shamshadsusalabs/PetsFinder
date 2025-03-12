@@ -15,7 +15,7 @@ const Match = () => {
         const user = await AsyncStorage.getItem("user");
         if (!user) return;
         const userId = JSON.parse(user).id;
-        const response = await axios.get(`https://petsfinder-702291258008.asia-south1.run.app/api/Foundpets/matching-pets/${userId}`);
+        const response = await axios.get(`http://192.168.191.99:5000/api/Foundpets/matching-pets/${userId}`);
         setPets(response.data.data);
       } catch (error) {
     
@@ -42,7 +42,7 @@ const Match = () => {
 
   return (
     <LinearGradient colors={["#f9f9f9", "#e5e5e5"]} className="flex-1 p-4">
-      <Text className="text-4xl font-extrabold text-center text-black mb-6">🐾 Matching Pets</Text>
+      <Text className="text-4xl font-extrabold text-center text-black mb-6">🐾AI Match</Text>
 
       {loading ? (
         <View className="flex-1 justify-center items-center">

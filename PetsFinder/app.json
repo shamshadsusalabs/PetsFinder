@@ -4,28 +4,41 @@
     "slug": "PetsFinder",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/banner.webp",
+    "icon": "./assets/Found.png",
     "userInterfaceStyle": "light",
     "newArchEnabled": true,
     "splash": {
-      "image": "./assets/banner.webp",
+      "image": "./assets/Found.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "PetsFinder",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      }
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/banner.webp",
+        "foregroundImage": "./assets/Found.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.sham321.PetFinder"
     },
     "web": {
-      "favicon": "./assets/icons.webp"
+      "favicon": "./assets/Dog Tag Mission Logo (6).png"
     },
     "plugins": [
       "expo-router"
-    ]
+    ],
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "35e46c26-a2e9-4dc4-8521-5a068a798a59"
+      }
+    }
   }
 }

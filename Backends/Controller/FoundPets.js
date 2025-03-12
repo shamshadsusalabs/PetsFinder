@@ -129,7 +129,7 @@ exports.getMatchingPets = async (req, res) => {
     // Matching conditions ready karo
     const fields = [
       "Indianbreed", "Importedbreed", "eyeColour", "colour", "gender",
-      "size", "body", "noseColour", "injury", "underTreatment",
+      "size", "body", "noseColour", "injury",
       "sterilised", "earClip", "tailCut", "leg"
     ];
 

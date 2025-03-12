@@ -15,7 +15,7 @@ const validateFoundPet = [
   body("image").notEmpty().withMessage("Image is required"),
 
   // Optional Fields (will not throw errors if missing or empty)
-  body("name").optional({ checkFalsy: true }),
+
 
   body("Importedbreed")
     .optional({ checkFalsy: true })
@@ -30,11 +30,11 @@ const validateFoundPet = [
     .optional({ checkFalsy: true })
     .isIn([
       "Indie", "Indie Mix", "Lab Mix", "Rottweiler Mix", "Doberman Mix", 
-      "German Shepherd Mix", "Pom Mix", "Spitz Mix",
+      "German Shepherd Mix", "Pom Mix", "Spitz Mix", "Other"
     ])
     .withMessage("Invalid breed"),
 
-  body("rewards").optional({ checkFalsy: true }).isNumeric().withMessage("Rewards must be a number"),
+ 
   
   body("gender").optional({ checkFalsy: true }).isIn(["Male", "Female"]).withMessage("Invalid gender"),
   
@@ -63,7 +63,7 @@ const validateFoundPet = [
   
   body("injury").optional({ checkFalsy: true }).isIn(["Yes", "No"]).withMessage("Invalid injury value"),
   
-  body("underTreatment").optional({ checkFalsy: true }).isIn(["Yes", "No"]).withMessage("Invalid under treatment value"),
+ 
   body("userId").isMongoId().withMessage("Invalid userId"), // User ID Validation
 ];
 

@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 
 const FoundPetSchema = new mongoose.Schema({
-  name: { type: String },  // Optional
+ 
   Indianbreed: { 
     type: String, 
     enum: [
@@ -51,12 +51,11 @@ const FoundPetSchema = new mongoose.Schema({
   noseColour: { type: String, enum: ["Black", "Pink", "Red", "Spots", "Other"], required: false, set: v => v === "" ? undefined : v },  
   eyeColour: { type: String, enum: ["Black", "Brown", "Other"], required: false, set: v => v === "" ? undefined : v },  
   injury: { type: String, enum: ["Yes", "No"], required: false, set: v => v === "" ? undefined : v },  
-  underTreatment: { type: String, enum: ["Yes", "No"], required: false, set: v => v === "" ? undefined : v },  
-
+ 
   image: { type: String, required: true },  // * Required
   match: { type: Boolean, default: false },  // Optional
   details: { type: String, required: true },  // * Required
-  rewards: { type: Number } , // Optional
+ 
   userId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true }
 }, { timestamps: true });
 
